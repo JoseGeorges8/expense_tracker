@@ -96,6 +96,19 @@ The architecture is designed for easy extension:
 - **New Report Formats**: Add a formatter implementing the format interface
 - **New Storage**: Implement `TransactionRepository` for different databases
 
+## Running Tests
+
+```bash
+# Run all tests
+pytest
+
+# Run with verbose output
+pytest -v
+
+# Run with coverage report
+pytest --cov=expense_tracker --cov-report=html
+```
+
 ## Future Considerations
 
 - Budget tracking and alerts
