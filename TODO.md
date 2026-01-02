@@ -9,11 +9,10 @@ Project Management SaaS is overhyped. Why not just keep progress with a markdown
   - Parse transaction date, description, amount
   - Determine transaction type (debit/credit)
   - Handle edge cases (refunds, fees)
+- [X] Set Factory for Registry pattern to select parsers
 
 ### In Progress
-- [ ] Set Factory for Registry pattern to select parsers
 - [ ] Set up SQLite database schema
-
 
 ### Up Next
 - [ ] Create Transaction repository with basic CRUD

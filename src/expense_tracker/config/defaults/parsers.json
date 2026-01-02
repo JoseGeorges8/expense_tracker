@@ -1,0 +1,9 @@
+{
+    "parsers": [
+        {
+            "financial_institution": "amex",
+            "class": "expense_tracker.parsers.amex_excel.AmexExcelParser",
+            "extensions": [".xlsx", ".xls"]
+        }
+    ]
+}

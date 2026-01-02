@@ -91,10 +91,11 @@ expense_tracker/
 
 The architecture is designed for easy extension:
 
-- **New Banks**: Add a parser class implementing `StatementParser`
+- **New Financial Institutions**: Add a parser class implementing `StatementParser`
 - **New Categories**: Update `categories.py` and rules configuration
 - **New Report Formats**: Add a formatter implementing the format interface
 - **New Storage**: Implement `TransactionRepository` for different databases
+- **Personal Extensions**: Register your own financial institutions through the `config` folder**
 
 ## Running Tests
 
