@@ -1,0 +1,34 @@
+[project]
+name = "expense-tracker"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Jose Georges",email = "georges.elboutros@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "typer (>=0.21.0,<0.22.0)",
+    "openpyxl (>=3.1.5,<4.0.0)",
+    "pandas (>=2.3.3,<3.0.0)",
+    "rich (>=14.2.0,<15.0.0)"
+]
+
+[dependency-groups]
+test = [
+    "pytest (>=9.0.2,<10.0.0)"
+]
+lint = [
+    "ruff (>=0.14.10,<0.15.0)"
+]
+dev = [
+    { include-group = "test" },
+    { include-group = "lint" },
+]
+
+[tool.poetry]
+packages = [{include = "expense_tracker", from = "src"}]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
