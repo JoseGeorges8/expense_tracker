@@ -7,25 +7,12 @@ from expense_tracker.parsers.amex_excel import AmexExcelParser
 from expense_tracker.domain.enums import TransactionType
 
 @pytest.fixture
-def parser() -> AmexExcelParser:
-    """Create a parser instance for each test"""
-    return AmexExcelParser()
-
-@pytest.fixture
-def sample_amex_file() -> Path:
-    """Provide a path from a sample Amex statement"""
-    return Path("tests/fixtures/sample_amex.xls")
-
-@pytest.fixture
-def sample_invalid_amex_file() -> Path:
-    """Provide a path from an invalid sample Amex statement"""
-    return Path("tests/fixtures/sample_invalid_amex.xls")
-
-@pytest.fixture
 def sample_non_amex_file() -> Path:
     """Provide a path from a wrong extension sample Amex file"""
     return Path("tests/fixtures/sample_amex.txt")
 
+@pytest.mark.unit
+@pytest.mark.amex 
 class TestAmexParserValidation:
 
     def test_validate_file_does_not_exist(self, parser: AmexExcelParser):
@@ -43,6 +30,8 @@ class TestAmexParserValidation:
     def test_validate_file_correct(self, parser: AmexExcelParser, sample_amex_file: Path):
         parser.validate_file(sample_amex_file)
 
+@pytest.mark.unit
+@pytest.mark.amex 
 class TestAmexParserCreditRows:
 
     def test_parse_credit_refund_transaction(self, parser: AmexExcelParser):
@@ -67,6 +56,8 @@ class TestAmexParserCreditRows:
         assert transaction.type == TransactionType.CREDIT
         assert transaction.account == 'amex'
 
+@pytest.mark.unit
+@pytest.mark.amex 
 class TestAmexParserDebitRows:
 
     def test_parse_debit_transaction(self, parser: AmexExcelParser):
@@ -90,7 +81,7 @@ class TestAmexParserDebitRows:
         assert transaction.description == 'MEMBERSHIP FEE INSTALLMENT'
         assert transaction.amount == Decimal('12.99')
         assert transaction.type == TransactionType.DEBIT
-        assert transaction.account == 'amex-JOHN SMITH'
+        assert transaction.account == 'amex'
     
 
 

@@ -100,13 +100,13 @@ The architecture is designed for easy extension:
 
 ```bash
 # Run all tests
-pytest
+poetry run pytest
 
-# Run with verbose output
-pytest -v
+# Run only unit tests (as per the pyproject.toml marker definitions)
+poetry run pytest -m unit
 
 # Run with coverage report
-pytest --cov=expense_tracker --cov-report=html
+poetry run pytest --cov=expense_tracker --cov-report=html
 ```
 
 ## Future Considerations

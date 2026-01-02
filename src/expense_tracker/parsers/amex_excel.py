@@ -24,10 +24,6 @@ class AmexExcelParser(StatementParser):
     CARDMEMBER_COL = "Cardmember"
     MERCHANT_ADDR_COL = "Merchant Address"
 
-    CREDIT_KEYWORDS = [
-        'payment', 'credit', 'refund', 'return', 'reversal', 'adjustment credit'
-    ]
-
     def validate_file(self, filepath):
         """
         Check if file exists, is an Excel file, and is a valid Amex statement.
@@ -105,6 +101,10 @@ class AmexExcelParser(StatementParser):
             try:
                 if not self._valid_row(row):
                     continue
+
+                # Tracking payments will mess with the overall budget total
+                if self._is_payment_row(row):
+                    continue
                     
                 transaction = self._parse_row(row)
                 if transaction:
@@ -161,6 +161,9 @@ class AmexExcelParser(StatementParser):
                 False
 
         return True
+    
+    def _is_payment_row(self, row: pd.Series) -> bool:
+        return row.get(self.MERCHANT_ADDR_COL) == 'PAYMENT RECEIVED - THANK YOU'
     
     def _is_credit_row(self, row: pd.Series) -> bool:
         """
@@ -222,7 +225,6 @@ class AmexExcelParser(StatementParser):
             # For credit rows, amount is already negative
             amount = Decimal(str(abs(amount_value)))
             transaction_type = TransactionType.CREDIT
-            cardmember = None  # Credit rows don't track cardmember
         else:
             # Normal debit row - standard column structure
             description = str(row[self.DESCRIPTION_COL]).strip()
@@ -234,17 +236,12 @@ class AmexExcelParser(StatementParser):
             
             transaction_type = TransactionType.DEBIT
 
-            # Get cardmember if available (only for normal rows)
-            cardmember = None
-            if self.CARDMEMBER_COL in row.index and pd.notna(row[self.CARDMEMBER_COL]):
-                cardmember = str(row[self.CARDMEMBER_COL]).strip()
-        
         return Transaction(
             date=date,
             description=description,
             amount=amount,
             type=transaction_type,
-            account=f"amex-{cardmember}" if cardmember else "amex",
+            account="amex",
             category=None
         )
         

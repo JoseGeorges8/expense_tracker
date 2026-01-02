@@ -35,3 +35,15 @@ packages = [{include = "expense_tracker", from = "src"}]
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+# ============================================================================
+# PYTEST CONFIGURATION
+# ============================================================================
+[tool.pytest]
+# Markers for organizing tests
+markers = [
+    "unit: Unit tests (fast, isolated, mocked)",
+    "integration: Integration tests (slower, uses real files/DB)",
+    "slow: Tests that take a long time to run",
+    "amex: Tests specific to Amex parser",
+]
