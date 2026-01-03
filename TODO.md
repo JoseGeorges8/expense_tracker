@@ -16,11 +16,11 @@ Project Management SaaS is overhyped. Why not just keep progress with a markdown
   - Import orchestration w/detection logic
   - Transaction querying
   - Monthly summary
+- [X] CLI setup with Typer
+- [X] `import` command
 
 ### In Progress
-- [ ] CLI setup with Typer
-  - `import` command
-  - `report` command
+- [ ] `report` command
 
 ### Up Next
 - [ ] Categorization system

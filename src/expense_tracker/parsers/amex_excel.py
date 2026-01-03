@@ -198,7 +198,7 @@ class AmexExcelParser(StatementParser):
         2. Credit rows (grey): Description in col 9, Amount in col 3 (negative)
         """
         # Parse date
-        date = pd.to_datetime(row[self.DATE_COL])
+        date = pd.to_datetime(row[self.DATE_COL]).date()
         
         # Check if this is a credit row (grey row with different structure)
         # Credit rows have NaN in the Description column but amount in a different position

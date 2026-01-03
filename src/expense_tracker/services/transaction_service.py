@@ -17,6 +17,7 @@ class TransactionService:
         self,
         filepath: Path,
         financial_institution: str,
+        dry_run: bool = False,
     ) -> ImportResult:
         """
         Import transactions from a statement file
@@ -30,11 +31,27 @@ class TransactionService:
         """
         parser = ParserFactory.create_parser(financial_institution)
         transactions = parser.parse(filepath)
-        new_transactions = self.repository.save_many(transactions)
-        
-        # Determining which were skipped
-        new_ids = {id(t) for t in new_transactions}
-        skipped = [t for t in transactions if id(t) not in new_ids]
+
+        if dry_run:
+            # Check duplicates WITHOUT saving
+            new_transactions = []
+            skipped = []
+            for txn in transactions:
+                if self.repository.exists(
+                    date=txn.date,
+                    account=txn.account,
+                    description=txn.description,
+                    amount=float(txn.amount)
+                ):
+                    skipped.append(txn)
+                else:
+                    new_transactions.append(txn)
+        else:
+            new_transactions = self.repository.save_many(transactions)
+            
+            # Determining which were skipped
+            new_ids = {id(t) for t in new_transactions}
+            skipped = [t for t in transactions if id(t) not in new_ids]
     
         return ImportResult(
             total_parsed=len(transactions),

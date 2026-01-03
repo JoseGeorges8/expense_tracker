@@ -77,7 +77,7 @@ class TestAmexParserDebitRows:
         transaction = parser._parse_row(row_data)
 
         # Assert
-        assert transaction.date == datetime.strptime('11-12-2025', '%d-%m-%Y')
+        assert transaction.date == datetime.strptime('11-12-2025', '%d-%m-%Y').date()
         assert transaction.description == 'MEMBERSHIP FEE INSTALLMENT'
         assert transaction.amount == Decimal('12.99')
         assert transaction.type == TransactionType.DEBIT

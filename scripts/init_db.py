@@ -21,7 +21,7 @@ def main():
         conn = db.get_connection()
 
         print(f"Executing schema from: {schema_file}")
-        execute_schema((conn, schema_file))
+        execute_schema(conn, schema_file)
 
         cursor = conn.execute(
             "SELECT version, description FROM schema_version ORDER BY version DESC LIMIT 1"
