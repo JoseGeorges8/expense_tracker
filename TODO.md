@@ -12,28 +12,17 @@ Project Management SaaS is overhyped. Why not just keep progress with a markdown
 - [X] Set Factory for Registry pattern to select parsers
 - [X] Set up SQLite database schema
 - [X] Create Transaction repository with basic CRUD
+- [X] Transaction Service layer
+  - Import orchestration w/detection logic
+  - Transaction querying
+  - Monthly summary
 
 ### In Progress
-
-### Up Next
-__To be determined. Too tired to thing__
-
----
-
-## 📋 Backlog
-
-### Core Features
 - [ ] CLI setup with Typer
   - `import` command
   - `report` command
-  - `categorize` command
-  - `add-rule` command
 
-- [ ] Transaction Service layer
-  - Import orchestration
-  - Duplicate detection logic
-  - Report generation
-
+### Up Next
 - [ ] Categorization system
   - Keyword rule implementation
   - Regex rule implementation
@@ -47,6 +36,18 @@ __To be determined. Too tired to thing__
   - Monthly summary calculations
   - Income vs. expense breakdown
   - Category totals
+
+---
+
+## 📋 Backlog
+
+### Core Features
+- [ ] CLI setup with Typer
+  - `import` command
+  - `report` command
+  - `categorize` command
+  - `add-rule` command
+
 
 ### Additional Parsers
 - [ ] Chase CSV parser

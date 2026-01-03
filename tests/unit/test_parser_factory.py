@@ -92,6 +92,7 @@ class TestParserFactorRegistry:
         with pytest.raises(TypeError):
             ParserFactory.register('amex', ParserFactory) # Any class thats not a StatementParser
 
+@pytest.mark.unit
 class TestParserFactoryCreateParser:
 
     def setup_method(self):
