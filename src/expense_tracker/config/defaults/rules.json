@@ -2,6 +2,16 @@
   "description": "Built-in categorization rules for common merchants and patterns",
   "rules": [
     {
+        "category": "Food & Dining",
+        "type": "keyword",
+        "patterns": [
+            "starbucks",
+            "tim hortons",
+            "ramen",
+            "mcdonald's"
+        ]
+    },
+    {
       "category": "Groceries",
       "type": "keyword",
       "patterns": [
@@ -114,6 +124,14 @@
         "refund",
         "return",
         "credit"
+      ]
+    },
+    {
+      "category": "Card Payment",
+      "type": "keyword",
+      "transaction_type": "Credit",
+      "patterns": [
+        "payment"
       ]
     },
     {

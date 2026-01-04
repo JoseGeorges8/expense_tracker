@@ -73,7 +73,7 @@ class CategorizationEngine:
             return config
         
         try:
-            return ConfigLoader.load_config('categorization_rules.json')
+            return ConfigLoader.load_rules_config()
         except FileNotFoundError:
             # User hasn't created custom rules yet - that's fine.
             return {"rules": []}
@@ -198,7 +198,7 @@ class CategorizationEngine:
                 description=txn.description,
                 amount=txn.amount,
                 type=txn.type,
-                account=txn.amount,
+                account=txn.account,
                 raw_data=txn.raw_data,
                 category=category
             )

@@ -6,7 +6,7 @@ from typing import Dict, Any
 PACKAGE_CONFIG_DIR = Path(__file__).parent / "defaults"
 
 # User configs (in project root, gitignored)
-PROJECT_ROOT = Path(__file__).parent.parent.parent
+PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 USER_CONFIG_DIR = PROJECT_ROOT / "config"
 
 class ConfigLoader:
@@ -51,4 +51,4 @@ class ConfigLoader:
     @staticmethod
     def load_rules_config():
         """Load rules registry configuration"""
-        return ConfigLoader.load_config('rules.json')
+        return ConfigLoader.load_config('categorization_rules.json')

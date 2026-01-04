@@ -68,6 +68,11 @@ def import_transactions(
         "--dry-run",
         help="Preview without saving to database",
     ),
+    categorize: bool = typer.Option(
+        False,
+        "--categorize",
+        help="Categorize transactions as they are being imported",
+    ),
 ):
     """
     Import transactions from a financial institution statement.
@@ -75,13 +80,15 @@ def import_transactions(
     Examples:
         expense-tracker import statement.xlsx
         expense-tracker import statement.xlsx --fi amex --dry-run
+        expense-tracker import statement.xlsx --fi amex --categorize
     """
     try:
         console.print(Panel.fit(
             f"[bold cyan]Import Configuration[/bold cyan]\n"
             f"File: {filepath}\n"
             f"Financial Institution: {financial_institution.upper()}\n"
-            f"Mode: {'DRY RUN' if dry_run else 'LIVE'}",
+            f"Mode: {'DRY RUN' if dry_run else 'LIVE'}"
+            f"Categorize: {'YES' if categorize else 'NO'}",
             border_style="cyan"
         ))
 
@@ -96,6 +103,7 @@ def import_transactions(
                 filepath=filepath,
                 financial_institution=financial_institution,
                 dry_run=dry_run,
+                categorize=categorize
             )
 
             progress.update(task, completed=True)
@@ -103,10 +111,11 @@ def import_transactions(
         console.print(f"\n[bold]Found {result.total_parsed} transactions[/bold]")
 
         if result.imported or result.skipped:
-            preview_transactions = (result.imported + result.skipped)[:5]
+            preview_transactions = (result.imported + result.skipped)
             preview_table = Table(title="Preview (first 5)")
             preview_table.add_column("Date", style="cyan")
             preview_table.add_column("Description", style="white")
+            preview_table.add_column("Category", style="magenta")
             preview_table.add_column("Amount", justify="right")
             preview_table.add_column("Status", justify="center")
 
@@ -116,6 +125,7 @@ def import_transactions(
                 preview_table.add_row(
                     str(txn.date),
                     txn.description[:40],
+                    txn.category or "Uncategorized",
                     f"[{amount_color}]${txn.amount:.2f}[/{amount_color}]",
                     status
                 )

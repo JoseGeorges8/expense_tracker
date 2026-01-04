@@ -7,17 +7,27 @@ from expense_tracker.repositories.base import TransactionRepository
 from expense_tracker.domain.enums import TransactionType
 from expense_tracker.domain.models import Transaction
 from expense_tracker.services.models import ImportResult, MonthlySummary
+from expense_tracker.categorization import CategorizationEngine
 
 class TransactionService:
 
     def __init__(self, repository: TransactionRepository):
         self.repository = repository
+        self._categorization_engine: Optional[CategorizationEngine] = None
+
+    @property
+    def categorization_engine(self) -> CategorizationEngine:
+        """Lazy-load categorization engine"""
+        if self._categorization_engine is None:
+            self._categorization_engine = CategorizationEngine()
+        return self._categorization_engine
 
     def import_statement(
         self,
         filepath: Path,
         financial_institution: str,
         dry_run: bool = False,
+        categorize: bool = False,
     ) -> ImportResult:
         """
         Import transactions from a statement file
@@ -25,12 +35,20 @@ class TransactionService:
         Args:
             filepath: The path to the statement file
             financial_institution: the institution the statement is from
+            dry_run: Preview without saving
+            categorize: Automatically categorize transactions during import
 
         Returns:
             An ImportResult.
         """
         parser = ParserFactory.create_parser(financial_institution)
         transactions = parser.parse(filepath)
+
+        if categorize:
+            transactions = self.categorization_engine.categorize_many(
+                transactions, 
+                overwrite=True
+            )
 
         if dry_run:
             # Check duplicates WITHOUT saving

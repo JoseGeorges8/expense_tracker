@@ -24,10 +24,10 @@ Project Management SaaS is overhyped. Why not just keep progress with a markdown
   - Regex rule implementation
   - User-defined rules from config
   - Chain of responsibility setup
+- [X] `--categorize` flag for `import` command
 
 ### In Progress
 - [ ] `categorize` command
-- [ ] `--categorize` flag for `import` command
 
 ### Up Next
 - [ ] CIBC Bank Account parser
