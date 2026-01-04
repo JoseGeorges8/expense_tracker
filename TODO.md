@@ -19,16 +19,20 @@ Project Management SaaS is overhyped. Why not just keep progress with a markdown
 - [X] CLI setup with Typer
 - [X] `import` command
 - [X] `report` command
-
-### In Progress
-- [ ] Categorization system
+- [X] Categorization system
   - Keyword rule implementation
   - Regex rule implementation
   - User-defined rules from config
   - Chain of responsibility setup
+
+### In Progress
 - [ ] `categorize` command
+- [ ] `--categorize` flag for `import` command
 
 ### Up Next
+- [ ] CIBC Bank Account parser
+- [ ] CIBC Credit Card Statement parser
+
 - [ ] Reporting & Analysis
   - Text formatter (console output)
   - JSON formatter
@@ -43,7 +47,6 @@ Project Management SaaS is overhyped. Why not just keep progress with a markdown
 
 ### Core Features
 - [ ] CLI setup with Typer
-  - `categorize` command
   - `add-rule` command
 
 

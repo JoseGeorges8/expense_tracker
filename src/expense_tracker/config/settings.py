@@ -47,3 +47,8 @@ class ConfigLoader:
     def load_parsers_config():
         """Load parsers registry configuration"""
         return ConfigLoader.load_config('parsers.json')
+    
+    @staticmethod
+    def load_rules_config():
+        """Load rules registry configuration"""
+        return ConfigLoader.load_config('rules.json')

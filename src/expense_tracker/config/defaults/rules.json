@@ -1,0 +1,130 @@
+{
+  "description": "Built-in categorization rules for common merchants and patterns",
+  "rules": [
+    {
+      "category": "Groceries",
+      "type": "keyword",
+      "patterns": [
+        "loblaws",
+        "metro",
+        "walmart",
+        "sobeys",
+        "food basics",
+        "no frills",
+        "freshco",
+        "costco",
+        "farm boy",
+        "whole foods",
+        "wholefds",
+        "bulk barn"
+      ]
+    },
+    {
+      "category": "Gas",
+      "type": "keyword",
+      "patterns": [
+        "shell",
+        "esso",
+        "petro-canada",
+        "canadian tire gas",
+        "costco gas",
+        "pioneer"
+      ]
+    },
+    {
+      "category": "Subscriptions",
+      "type": "keyword",
+      "patterns": [
+        "netflix",
+        "spotify",
+        "amazon prime",
+        "disney",
+        "youtube premium",
+        "apple music",
+        "membership fee"
+      ]
+    },
+    {
+      "category": "Cell Phone",
+      "type": "keyword",
+      "patterns": [
+        "rogers",
+        "bell mobility",
+        "telus",
+        "fido",
+        "freedom mobile",
+        "koodo"
+      ]
+    },
+    {
+      "category": "Internet",
+      "type": "keyword",
+      "patterns": [
+        "rogers cable",
+        "bell internet",
+        "telus internet",
+        "cogeco",
+        "start.ca"
+      ]
+    },
+    {
+      "category": "Electric",
+      "type": "keyword",
+      "patterns": [
+        "toronto hydro",
+        "hydro ottawa",
+        "enbridge",
+        "ontario energy"
+      ]
+    },
+    {
+      "category": "Home",
+      "type": "keyword",
+      "patterns": [
+        "home depot",
+        "canadian tire",
+        "rona",
+        "lowes",
+        "home hardware"
+      ]
+    },
+    {
+      "category": "Dog Food",
+      "type": "keyword",
+      "patterns": [
+        "petsmart",
+        "pet valu",
+        "global pet foods"
+      ]
+    },
+    {
+      "category": "Vet Bills",
+      "type": "keyword",
+      "patterns": [
+        "veterinary",
+        "animal hospital",
+        "vet clinic"
+      ]
+    },
+    {
+      "category": "Refunds",
+      "type": "keyword",
+      "transaction_type": "Credit",
+      "patterns": [
+        "refund",
+        "return",
+        "credit"
+      ]
+    },
+    {
+      "category": "Rebates",
+      "type": "keyword",
+      "transaction_type": "Credit",
+      "patterns": [
+        "rebate",
+        "carbon rebate",
+        "cashback"
+      ]
+    }
+  ]
+}

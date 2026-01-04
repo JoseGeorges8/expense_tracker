@@ -1,0 +1,22 @@
+{
+  "rules": [
+    {
+      "category": "Housing",
+      "type": "keyword",
+      "transaction_type": "Debit",
+      "patterns": ["rona"]
+    },
+    {
+      "category": "Shopping",
+      "type": "regex",
+      "transaction_type": "Debit",
+      "patterns": ["^AMZN", "^AMAZON"]
+    },
+    {
+      "category": "Refunds",
+      "type": "keyword",
+      "transaction_type": "Credit",
+      "patterns": ["rona", "amazon"]
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+# Expense Categories
+GROCERIES = "Groceries"
+FOOD_DINING = "Food & Dining"
+SHOPPING = "Shopping"
+TRANSPORTATION = "Transportation"
+UTILITIES = "Utilities"
+HOUSING = "Housing"
+HEALTHCARE = "Healthcare"
+ENTERTAINMENT = "Entertainment"
+TRAVEL = "Travel"
+SUBSCRIPTIONS = "Subscriptions"
+FEES_CHARGES = "Fees & Charges"
+PERSONAL_CARE = "Personal Care"
+EDUCATION = "Education"
+GIFTS_DONATIONS = "Gifts & Donations"
+OTHER_EXPENSES = "Other Expenses"
+
+# Income Categories  
+SALARY = "Salary"
+REFUNDS = "Refunds"
+CASHBACK = "Cashback"
+OTHER_INCOME = "Other Income"
+
+# Special
+UNCATEGORIZED = "Uncategorized"
+
+# Collections for validation
+EXPENSE_CATEGORIES = {
+    GROCERIES, FOOD_DINING, SHOPPING, TRANSPORTATION,
+    UTILITIES, HOUSING, HEALTHCARE, ENTERTAINMENT,
+    TRAVEL, SUBSCRIPTIONS, FEES_CHARGES, PERSONAL_CARE,
+    EDUCATION, GIFTS_DONATIONS, OTHER_EXPENSES
+}
+
+INCOME_CATEGORIES = {
+    SALARY, REFUNDS, CASHBACK, OTHER_INCOME
+}
+
+ALL_CATEGORIES = EXPENSE_CATEGORIES | INCOME_CATEGORIES | {UNCATEGORIZED}
