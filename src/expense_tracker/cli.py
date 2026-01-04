@@ -1,18 +1,18 @@
 import typer
 from pathlib import Path
 from typing import Optional
+from datetime import date
 
 from rich.console import Console
 from rich.table import Table
 from rich.panel import Panel
-from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn
-from rich import box
+from rich.progress import Progress, SpinnerColumn, TextColumn
 
 from expense_tracker.parsers.factory import ParserFactory
 from expense_tracker.repositories.sqlite_transaction_repository import SQLiteTransactionRepository
 from expense_tracker.database.connection import DatabaseConfig, DatabaseManager
 from expense_tracker.services.transaction_service import TransactionService
-
+from expense_tracker.domain.enums import TransactionType
 
 app = typer.Typer(
     name="expense-tracker",
@@ -138,6 +138,180 @@ def import_transactions(
         if state.verbose:
             console.print_exception()
         raise typer.Exit(code=1)
+    
+@app.command(name="report")
+def report(
+    month: Optional[int] = typer.Option(
+        None,
+        "--month", "-m",
+        help="Month (1-12)",
+        min=1,
+        max=12
+    ),
+    year: Optional[int] = typer.Option(
+        None,
+        "--year", "-y",
+        help="Year",
+    ),
+):
+    """
+    Generate a monthly expense report.
+
+    Examples:
+        expense-tracker report
+        expense-tracker report --month --year 2025
+    """
+    try:
+        if month is None:
+            month = date.today().month
+
+        if year is None:
+            year = date.today().year
+
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            console=console,
+        ) as progress:
+            task = progress.add_task("Generating report...", total=None)
+            
+            summary = state.service.get_monthly_summary(
+                year=year,
+                month=month
+            )
+
+            progress.update(task, completed=True)
+
+        month_name = summary.start_date.strftime("%B %Y")
+        console.print(f"\n[bold cyan]Monthly Report: {month_name}[/bold cyan]")
+
+        if summary.total_transactions == 0:
+            console.print(Panel(
+                "[yellow]No transactions found for this month[/yellow]",
+                title="Empty Report",
+                border_style="yellow"
+            ))
+            return
+
+        # ═══════════════════════════════════════════════════════════
+        # SUMMARY PANEL - Overview of income/expenses
+        # ═══════════════════════════════════════════════════════════
+        
+        summary_text = (
+            f"[bold]Transactions:[/bold] {summary.total_transactions}\n\n"
+            f"[red]💸 Expenses:[/red]  ${summary.total_debits:>10,.2f}\n"
+            f"[green]💰 Income:[/green]    ${summary.total_credits:>10,.2f}\n"
+            f"{'─' * 30}\n"
+        )
+        
+        # Net flow with color based on positive/negative
+        if summary.net_flow >= 0:
+            summary_text += f"[bold green]📈 Net:[/bold green]      ${summary.net_flow:>10,.2f}"
+        else:
+            summary_text += f"[bold red]📉 Net:[/bold red]      ${summary.net_flow:>10,.2f}"
+        
+        console.print(Panel(
+            summary_text,
+            title=f"[bold]{month_name} Summary[/bold]",
+            border_style="cyan",
+            padding=(1, 2)
+        ))
+        
+        # ═══════════════════════════════════════════════════════════
+        # SPENDING BY CATEGORY - Top categories
+        # ═══════════════════════════════════════════════════════════
+        
+        if summary.debits_by_category:
+            console.print(f"\n[bold]Top Spending Categories[/bold]")
+            
+            category_table = Table(show_header=True, box=None, padding=(0, 2))
+            category_table.add_column("Category", style="cyan", no_wrap=True)
+            category_table.add_column("Amount", justify="right", style="red")
+            category_table.add_column("% of Total", justify="right", style="dim")
+            
+            for category, amount in summary.top_spending_categories[:10]:
+                percentage = (amount / summary.total_debits * 100) if summary.total_debits > 0 else 0
+                category_table.add_row(
+                    category,
+                    f"${amount:,.2f}",
+                    f"{percentage:.1f}%"
+                )
+            
+            console.print(category_table)
+        
+        # ═══════════════════════════════════════════════════════════
+        # INCOME BY CATEGORY (if any)
+        # ═══════════════════════════════════════════════════════════
+        
+        if summary.credits_by_category:
+            console.print(f"\n[bold]Income by Category[/bold]")
+            
+            income_table = Table(show_header=True, box=None, padding=(0, 2))
+            income_table.add_column("Category", style="cyan", no_wrap=True)
+            income_table.add_column("Amount", justify="right", style="green")
+            
+            sorted_credits = sorted(
+                summary.credits_by_category.items(),
+                key=lambda x: x[1],
+                reverse=True
+            )
+            
+            for category, amount in sorted_credits[:5]:
+                income_table.add_row(category, f"${amount:,.2f}")
+            
+            console.print(income_table)
+        
+        # ═══════════════════════════════════════════════════════════
+        # RECENT TRANSACTIONS - Latest activity
+        # ═══════════════════════════════════════════════════════════
+        
+        console.print(f"\n[bold]Recent Transactions[/bold]")
+        
+        all_transactions = summary.debits + summary.credits
+        all_transactions.sort(key=lambda t: t.date, reverse=True)
+        
+        txn_table = Table(show_header=True, padding=(0, 1))
+        txn_table.add_column("Date", style="cyan", width=12)
+        txn_table.add_column("Description", style="white", max_width=40)
+        txn_table.add_column("Category", style="dim", width=15)
+        txn_table.add_column("Financial Institution", justify="right", width=12)
+        txn_table.add_column("Amount", justify="right", width=12)
+        
+        # Show up to 15 most recent transactions
+        for txn in all_transactions[:15]:
+            # Truncate description if too long
+            desc = txn.description[:37] + "..." if len(txn.description) > 40 else txn.description
+            
+            # Color amount based on type
+            if txn.type == TransactionType.DEBIT:
+                amount_str = f"[red]-${txn.amount:,.2f}[/red]"
+            else:
+                amount_str = f"[green]+${txn.amount:,.2f}[/green]"
+            
+            txn_table.add_row(
+                str(txn.date),
+                desc,
+                txn.category or "Uncategorized",
+                txn.account,
+                amount_str,
+            )
+        
+        console.print(txn_table)
+        
+        # Footer with transaction count if we're showing a subset
+        if len(all_transactions) > 15:
+            console.print(f"\n[dim]Showing 15 of {len(all_transactions)} transactions[/dim]")
+        
+        if state.verbose:
+            console.print(f"\n[dim]→ Report generated successfully[/dim]")
+        
+
+    except Exception as e:
+        console.print(f"[bold red]Error:[/bold red] {e}")
+        if state.verbose:
+            console.print_exception()
+        raise typer.Exit(code=1)
+    
 
 def cli_main():
     """Entry point for the CLI"""

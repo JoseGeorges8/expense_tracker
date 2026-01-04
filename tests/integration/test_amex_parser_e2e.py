@@ -44,11 +44,11 @@ class TestAmexParserE2E:
         This validates the parser's accuracy end-to-end.
         """
         # Arrange 
-        expected_transaction_count = 67
+        expected_transaction_count = 68
         expected_debit_transaction_count = 59
-        expected_credit_transaction_count = 8
+        expected_credit_transaction_count = 9
         expected_debit_amount = Decimal('3827.15')
-        expected_credit_amount = Decimal('644.20')
+        expected_credit_amount = Decimal('2401.42')
        
         # Act
         transactions = parser.parse(sample_amex_file)

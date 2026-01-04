@@ -104,6 +104,50 @@ class TestTransactionServiceQuery:
 class TestTransactionServiceImport:
     """Test import operations"""
 
+    def test_import_dry_run_doesnt_save(
+        self,
+        service: TransactionService,
+        mock_repository: TransactionRepository,
+        sample_transactions: List[Transaction],
+        mocker
+    ):
+        """Test the import doesn't actually save when in dry-run mode"""
+        # Arrange
+        mock_parser = mocker.Mock()
+        mock_parser.parse.return_value = sample_transactions
+
+        mocker.patch(
+            'expense_tracker.parsers.factory.ParserFactory.create_parser',
+            return_value=mock_parser
+        )
+        mock_repository.exists.return_value = False
+
+        filepath = Path('sample_statement.xls')
+        financial_institution='amex'    
+
+        # Act
+        result = service.import_statement(
+            filepath=filepath,
+            financial_institution=financial_institution,
+            dry_run=True
+        )
+
+        # Assert
+        from expense_tracker.parsers.factory import ParserFactory
+        ParserFactory.create_parser.assert_called_once_with(financial_institution)
+
+        mock_parser.parse.assert_called_once_with(filepath)
+        mock_repository.exists.assert_called()
+        mock_repository.save_many.assert_not_called()
+        assert result.total_parsed == 2
+        assert result.errors == 0
+        assert result.duplicates_skipped == 0
+        assert result.new_transactions == 2
+        assert result.imported == sample_transactions
+        assert result.filepath == str(filepath)
+        assert result.financial_institution == financial_institution
+
+
     def test_import_statement_success(
             self,
             service: TransactionService,
@@ -137,7 +181,7 @@ class TestTransactionServiceImport:
         from expense_tracker.parsers.factory import ParserFactory
         ParserFactory.create_parser.assert_called_once_with(financial_institution)
 
-        mock_parser.parse.called_once_with(filepath)
+        mock_parser.parse.assert_called_once_with(filepath)
 
         mock_repository.save_many.assert_called_once_with(sample_transactions)
         

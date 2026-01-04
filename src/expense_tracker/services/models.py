@@ -110,7 +110,7 @@ class MonthlySummary:
     def top_spending_categories(self) -> List[tuple[str, Decimal]]:
         """Categories sorted by spending amount (descending)"""
         return sorted(
-            self.debit_by_category.items(),
+            self.debits_by_category.items(),
             key=lambda x: x[1],
             reverse=True
         )
@@ -148,7 +148,7 @@ class MonthlySummary:
             f"  {'📈' if self.net_flow >= 0 else '📉'} Net:     ${self.net_flow:,.2f}",
         ]
         
-        if self.debit_by_category:
+        if self.debits_by_category:
             lines.append(f"\nTop Spending Categories:")
             for category, amount in self.top_spending_categories[:5]:
                 lines.append(f"  • {category}: ${amount:,.2f}")

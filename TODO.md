@@ -18,17 +18,17 @@ Project Management SaaS is overhyped. Why not just keep progress with a markdown
   - Monthly summary
 - [X] CLI setup with Typer
 - [X] `import` command
+- [X] `report` command
 
 ### In Progress
-- [ ] `report` command
-
-### Up Next
 - [ ] Categorization system
   - Keyword rule implementation
   - Regex rule implementation
   - User-defined rules from config
   - Chain of responsibility setup
+- [ ] `categorize` command
 
+### Up Next
 - [ ] Reporting & Analysis
   - Text formatter (console output)
   - JSON formatter
@@ -43,8 +43,6 @@ Project Management SaaS is overhyped. Why not just keep progress with a markdown
 
 ### Core Features
 - [ ] CLI setup with Typer
-  - `import` command
-  - `report` command
   - `categorize` command
   - `add-rule` command
 

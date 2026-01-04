@@ -103,8 +103,9 @@ class AmexExcelParser(StatementParser):
                     continue
 
                 # Tracking payments will mess with the overall budget total
-                if self._is_payment_row(row):
-                    continue
+                # I've removed this for now because it might make more sense to keep if we have a statement from the bank of this money leaving the account (it'll even itself out)
+                # if self._is_payment_row(row):
+                #     continue
                     
                 transaction = self._parse_row(row)
                 if transaction:
