@@ -10,3 +10,4 @@ htmlcov/
 # User configuration (keep .example files)
 config/*
 !config/README.md
+data/*
