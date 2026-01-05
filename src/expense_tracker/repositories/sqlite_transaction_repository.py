@@ -167,6 +167,44 @@ class SQLiteTransactionRepository(TransactionRepository):
             
         return transaction
     
+    def update_many(self, transactions: List[Transaction]) -> List[Transaction]:
+        """Update multiple transactions efficiently"""
+
+        if not transactions:
+            return []
+        
+        # Validate all transactions have IDs upfront
+        invalid_txns = [txn for txn in transactions if txn.id is None]
+        if invalid_txns:
+            raise ValueError(
+                f"Cannot update transactions without IDs. "
+                f"Found {len(invalid_txns)} transactions missing IDs."
+            )
+
+        update_data = [
+            (
+                txn.description,
+                str(txn.amount),
+                txn.type.value,
+                txn.category,
+                txn.id,
+            )
+            for txn in transactions
+        ]
+
+        with self.db.transaction() as conn:
+            conn.executemany(
+                """
+                UPDATE transactions
+                SET description = ?, amount = ?, type = ?, category = ?
+                WHERE id = ?
+                """,
+                update_data
+            )
+
+
+        return transactions
+
     def delete(self, transaction_id: int) -> bool:
         """Delete a transaction by ID."""
         with self.db.transaction() as conn:

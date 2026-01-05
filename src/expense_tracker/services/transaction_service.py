@@ -11,9 +11,13 @@ from expense_tracker.categorization import CategorizationEngine
 
 class TransactionService:
 
-    def __init__(self, repository: TransactionRepository):
+    def __init__(
+        self, 
+        repository: TransactionRepository, 
+        categorization_engine: Optional[CategorizationEngine] = None,
+    ):
         self.repository = repository
-        self._categorization_engine: Optional[CategorizationEngine] = None
+        self._categorization_engine: Optional[CategorizationEngine] = categorization_engine
 
     @property
     def categorization_engine(self) -> CategorizationEngine:
@@ -140,5 +144,60 @@ class TransactionService:
             debits=debits,
             credits=credits,
         )
+    
+    def categorize_transactions(
+        self,
+        start_date: Optional[date] = None,
+        end_date: Optional[date] = None,
+        overwrite: bool = False
+    ) -> int:
+        """
+        Categorize existing transactions in the database.
+
+        Args:
+            start_date: Only categorize transactions on or after this date
+            end_date: Only categorize transactions on or before this date
+            overwrite: If True, re-categorize already categorized transactions
+
+        Returns:
+            Number of transactions categorized
+
+        Example:
+                ```
+            # Categorize all uncategorized transactions
+            count = service.categorize_transactions()
+            
+            # Re-categorize everything from January
+            count = service.categorize_transactions(
+                start_date=date(2025, 1, 1),
+                end_date=date(2025, 1, 31),
+                overwrite=True
+            )
+            ```
+        """
+
+        transactions = self.repository.get_all(
+            start_date=start_date,
+            end_date=end_date
+        )
+
+        if not transactions:
+            return 0
+            
+        
+        categorized = self.categorization_engine.categorize_many(
+            transactions,
+            overwrite=overwrite
+        )
+
+        # Filter to only update what needs updating
+        to_update = [
+            txn for txn in categorized 
+            if overwrite or txn.category != "Uncategorized"
+        ]
+
+        updated = self.repository.update_many(to_update)
+
+        return len(updated)
 
         

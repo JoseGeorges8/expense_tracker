@@ -100,6 +100,20 @@ class TransactionRepository(ABC):
             TransactionNotFoundError: If transaction doesn't exist
         """
         pass
+
+    @abstractmethod
+    def update_many(self, transactions: List[Transaction]) -> List[Transaction]:
+        """
+        Update multiple existing transactions in a single operation.
+        
+        Args:
+            transactions: Transactions with updated values
+            
+        Returns:
+            Updated transactions
+            
+        """
+        pass
     
     @abstractmethod
     def delete(self, transaction_id: int) -> bool:

@@ -111,7 +111,7 @@ def import_transactions(
         console.print(f"\n[bold]Found {result.total_parsed} transactions[/bold]")
 
         if result.imported or result.skipped:
-            preview_transactions = (result.imported + result.skipped)
+            preview_transactions = (result.imported + result.skipped)[:5]
             preview_table = Table(title="Preview (first 5)")
             preview_table.add_column("Date", style="cyan")
             preview_table.add_column("Description", style="white")
@@ -322,6 +322,119 @@ def report(
             console.print_exception()
         raise typer.Exit(code=1)
     
+@app.command(name="categorize")
+def categorize_command(
+    start_date: Optional[str] = typer.Option(
+        None,
+        "--start", "-s",
+        help="Start date (YYYY-MM-DD). Categorize transactions on or after this date."
+    ),
+    end_date: Optional[str] = typer.Option(
+        None,
+        "--end", "-e",
+        help="End date (YYYY-MM-DD). Categorize transactions on or before this date."
+    ),
+    overwrite: bool = typer.Option(
+        False,
+        "--overwrite", "-o",
+        help="Re-categorize transactions that already have a category"
+    ),
+    show_rules: bool = typer.Option(
+        False,
+        "--show-rules",
+        help="Display the active categorization rules and exit"
+    ),
+):
+    """
+    Categorize existing transactions in the database.
+
+    By default, only categorizes transactions marked as "Uncategorized".
+    Use --overwrite to re-categorize all transactions.
+    
+    Examples:
+    ```
+        # Categorize all uncategorized transactions
+        expense-tracker categorize
+        
+        # Categorize transactions from January 2025
+        expense-tracker categorize --start 2025-01-01 --end 2025-01-31
+        
+        # Re-categorize everything (overwrite existing categories)
+        expense-tracker categorize --overwrite
+        
+        # Show active categorization rules
+        expense-tracker categorize --show-rules
+    ```
+    """
+    try:
+        if show_rules:
+            engine = state.service.categorization_engine
+            console.print("\n[bold cyan]Active Categorization Rules [/bold cyan]\n")
+            console.print(engine.get_rule_chain_info())
+            console.print(f"\n[dim]Total rules in chain: {repr(engine)}[/dim]")
+            return
+        
+        start = None
+        end = None
+        if start_date:
+            try:
+                start = date.fromisoformat(start_date)
+            except ValueError:
+                console.print(f"[bold red]Error:[/bold red] Invalid start date format. Use YYYY-MM-DD")
+                raise typer.Exit(code=1)
+
+        
+        if end_date:
+            try:
+                end = date.fromisoformat(end_date)
+            except ValueError:
+                console.print(f"[bold red]Error:[/bold red] Invalid end date format. Use YYYY-MM-DD")
+                raise typer.Exit(code=1)
+            
+        scope_desc = "all transactions"
+        if start and end:
+            scope_desc = f"transaction from {start} to {end}"
+        elif start:
+            scope_desc = f"transactions from {start} onwards"
+        elif end:
+            scope_desc = f"transactions up to {end}"
+
+        mode_desc = "Re-categorizing" if overwrite else "Categorizing uncategorized"
+
+        console.print(Panel.fit(
+            f"[bold cyan] Categorization Configuration[/bold cyan]\n"
+            f"Scope: {scope_desc}\n"
+            f"Mode: {mode_desc}",
+            border_style="cyan"
+        ))  
+
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            console=console
+        ) as progress:
+            task = progress.add_task("Categorizing transactions...", total=None)
+
+            count = state.service.categorize_transactions(
+                start_date=start,
+                end_date=end,
+                overwrite=overwrite
+            )
+
+            progress.update(task, completed=True)
+
+        if count == 0:
+            console.print("\n[yellow]No transactions to categorize[/yellow]")
+        else:
+            console.print(f"\n[bold green]✓ Categorized {count} transactions[/bold green]")
+
+        if state.verbose:
+                console.print(f"\n[dim]→ Categorization complete[/dim]")
+    except Exception as e:
+        console.print(f"[bold red]Error:[/bold red] {e}")
+        if state.verbose:
+            console.print_exception()
+        raise typer.Exit(code=1)
 
 def cli_main():
     """Entry point for the CLI"""

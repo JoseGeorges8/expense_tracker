@@ -25,13 +25,17 @@ Project Management SaaS is overhyped. Why not just keep progress with a markdown
   - User-defined rules from config
   - Chain of responsibility setup
 - [X] `--categorize` flag for `import` command
+- [X] `categorize` command (basics)
 
 ### In Progress
-- [ ] `categorize` command
-
-### Up Next
 - [ ] CIBC Bank Account parser
 - [ ] CIBC Credit Card Statement parser
+
+### Up Next
+- [ ] test categorize_many transaction service method
+- [ ] improve the categorize method to return details about the categorization (how many were left uncategorized vs new categories vs same)
+- [ ] validate rules configuration
+- [ ] Ability to `import` multiple statements (folder path vs file path)
 
 - [ ] Reporting & Analysis
   - Text formatter (console output)

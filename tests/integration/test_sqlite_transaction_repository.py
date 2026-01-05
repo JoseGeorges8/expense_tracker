@@ -316,7 +316,58 @@ class TestSQLiteRepository:
         # Act & Assert
         with pytest.raises(TransactionNotFoundError):
             repo.update(fake_txn)
-    
+
+    def test_update_many_transactions(
+        self, 
+        repo: SQLiteTransactionRepository
+    ):
+        
+        # Arrange
+        txns = [
+            Transaction(
+                date=date(2025, 1, i),
+                description=f"Original {i}",
+                amount=Decimal("10.00"),
+                type=TransactionType.DEBIT,
+                account="test",
+                category="Uncategorized"
+            )
+            for i in range(1, 6)
+        ]
+        saved = repo.save_many(txns)
+
+        for txn in saved:
+            txn.category = "Updated"
+
+        # Act
+        updated = repo.update_many(saved)
+
+        # Arrange
+        assert len(updated) == 5
+        for txn in updated:
+            retrieved = repo.get_by_id(txn.id)
+            assert retrieved.category == "Updated"
+
+    def test_update_many_with_missing_id_raises_error(self, repo: SQLiteTransactionRepository):
+        """Test that transactions without IDs raise ValueError"""
+        # Arrange
+        txn_without_id = Transaction(
+            date=date(2025, 1, 1),
+            description="No ID",
+            amount=Decimal("10.00"),
+            type=TransactionType.DEBIT,
+            account="test"
+        )
+        
+        # Act & Assert
+        with pytest.raises(ValueError, match="without IDs"):
+            repo.update_many([txn_without_id])
+
+    def test_update_many_empty_list_returns_empty(self, repo: SQLiteTransactionRepository):
+        """Test updating empty list returns empty list"""
+        result = repo.update_many([])
+        assert result == []
+
     def test_delete_transaction(self, repo: SQLiteTransactionRepository, sample_transaction: Transaction):
         """Test deleting a transaction."""
         # Arrange
@@ -330,7 +381,7 @@ class TestSQLiteRepository:
         assert deleted is True
         assert repo.get_by_id(txn_id) is None
     
-    def test_delete_nonexistent_returns_false(self, repo):
+    def test_delete_nonexistent_returns_false(self, repo: SQLiteTransactionRepository):
         """Test deleting non-existent transaction returns False."""
         deleted = repo.delete(99999)
         assert deleted is False
