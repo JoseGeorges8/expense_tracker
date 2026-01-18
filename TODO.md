@@ -26,10 +26,10 @@ Project Management SaaS is overhyped. Why not just keep progress with a markdown
   - Chain of responsibility setup
 - [X] `--categorize` flag for `import` command
 - [X] `categorize` command (basics)
+- [X] CIBC Costco Credit Card Statement parser
 
 ### In Progress
 - [ ] CIBC Bank Account parser
-- [ ] CIBC Credit Card Statement parser
 
 ### Up Next
 - [ ] test categorize_many transaction service method
