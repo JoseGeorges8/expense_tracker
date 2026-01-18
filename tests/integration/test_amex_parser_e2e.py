@@ -9,7 +9,7 @@ from expense_tracker.domain.enums import TransactionType
 class TestAmexParserE2E:
     """End-to-end tests with real Excel file"""
 
-    def test_parse_complete_statement(self, parser: AmexExcelParser, sample_amex_file: Path):
+    def test_parse_complete_statement(self, amex_parser: AmexExcelParser, sample_amex_file: Path):
         """
         Test parsing a complete Amex statement with mixed transactions.
         
@@ -19,7 +19,7 @@ class TestAmexParserE2E:
         - Validates the complete output
         """
         # Act
-        transactions = parser.parse(sample_amex_file)
+        transactions = amex_parser.parse(sample_amex_file)
 
         # Assert - verify there are transactions
         assert len(transactions) > 0, "Should have at least one transaction"
@@ -37,7 +37,7 @@ class TestAmexParserE2E:
             assert transaction.amount > 0, "All amounts should be positive"
             assert transaction.account == "amex", "All should be from Amex account"
 
-    def test_parse_statement_with_known_totals(self, parser: AmexExcelParser, sample_amex_file: Path):
+    def test_parse_statement_with_known_totals(self, amex_parser: AmexExcelParser, sample_amex_file: Path):
         """
         Test that parsed totals match expected values from the statement.
         
@@ -51,7 +51,7 @@ class TestAmexParserE2E:
         expected_credit_amount = Decimal('2401.42')
        
         # Act
-        transactions = parser.parse(sample_amex_file)
+        transactions = amex_parser.parse(sample_amex_file)
 
         debits = [t for t in transactions if t.type == TransactionType.DEBIT]
         credits = [t for t in transactions if t.type == TransactionType.CREDIT]
@@ -66,7 +66,7 @@ class TestAmexParserE2E:
         assert debit_total_amount == expected_debit_amount,  f"Debit amount mismatch: expected {expected_debit_amount}, got {debit_total_amount}"
         assert credit_total_amount == expected_credit_amount,  f"Credit amount mismatch: expected {expected_credit_amount}, got {credit_total_amount}"
 
-    def test_parser_rejects_invalid_file(self, parser: AmexExcelParser, sample_invalid_amex_file: Path):
+    def test_parser_rejects_invalid_file(self, amex_parser: AmexExcelParser, sample_invalid_amex_file: Path):
         """
         Test that parser properly rejects non-Amex files.
         
@@ -74,4 +74,4 @@ class TestAmexParserE2E:
         """
         # Act & Assert
         with pytest.raises(ValueError):
-            parser.parse(sample_invalid_amex_file)
+            amex_parser.parse(sample_invalid_amex_file)

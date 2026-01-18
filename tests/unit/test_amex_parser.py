@@ -15,26 +15,26 @@ def sample_non_amex_file() -> Path:
 @pytest.mark.amex 
 class TestAmexParserValidation:
 
-    def test_validate_file_does_not_exist(self, parser: AmexExcelParser):
+    def test_validate_file_does_not_exist(self, amex_parser: AmexExcelParser):
         with pytest.raises(FileNotFoundError):
-            parser.validate_file('non_existent.xls')
+            amex_parser.validate_file('non_existent.xls')
 
-    def test_validate_file_incorrect_extension(self, parser: AmexExcelParser, sample_non_amex_file: Path):
+    def test_validate_file_incorrect_extension(self, amex_parser: AmexExcelParser, sample_non_amex_file: Path):
         with pytest.raises(ValueError, match=f"File must be .xlsx or .xls, got {sample_non_amex_file.suffix}"):
-            parser.validate_file(sample_non_amex_file)
+            amex_parser.validate_file(sample_non_amex_file)
 
-    def test_validate_file_no_header(self, parser: AmexExcelParser, sample_invalid_amex_file: Path):
+    def test_validate_file_no_header(self, amex_parser: AmexExcelParser, sample_invalid_amex_file: Path):
         with pytest.raises(ValueError, match="Could not find a header row in the file"):
-            parser.validate_file(sample_invalid_amex_file)
+            amex_parser.validate_file(sample_invalid_amex_file)
 
-    def test_validate_file_correct(self, parser: AmexExcelParser, sample_amex_file: Path):
-        parser.validate_file(sample_amex_file)
+    def test_validate_file_correct(self, amex_parser: AmexExcelParser, sample_amex_file: Path):
+        amex_parser.validate_file(sample_amex_file)
 
 @pytest.mark.unit
 @pytest.mark.amex 
 class TestAmexParserCreditRows:
 
-    def test_parse_credit_refund_transaction(self, parser: AmexExcelParser):
+    def test_parse_credit_refund_transaction(self, amex_parser: AmexExcelParser):
         """Test parsing a grey row refund transaction"""
 
         # Arrange
@@ -48,7 +48,7 @@ class TestAmexParserCreditRows:
         })
 
         # Act
-        transaction = parser._parse_row(row_data)
+        transaction = amex_parser._parse_row(row_data)
 
         # Assert
         assert transaction.description == 'AMZN MKTP CA'
@@ -60,7 +60,7 @@ class TestAmexParserCreditRows:
 @pytest.mark.amex 
 class TestAmexParserDebitRows:
 
-    def test_parse_debit_transaction(self, parser: AmexExcelParser):
+    def test_parse_debit_transaction(self, amex_parser: AmexExcelParser):
         """Test parsing debit transaction"""
 
         # Arrange
@@ -74,7 +74,7 @@ class TestAmexParserDebitRows:
         })
 
         # Act
-        transaction = parser._parse_row(row_data)
+        transaction = amex_parser._parse_row(row_data)
 
         # Assert
         assert transaction.date == datetime.strptime('11-12-2025', '%d-%m-%Y').date()

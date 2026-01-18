@@ -27,4 +27,4 @@ class Transaction:
     
     def __repr__(self):
         sign = "+" if self.type == TransactionType.CREDIT else "-"
-        return f"Transaction({self.date}, {self.description[:30]}, {sign}${self.amount})"
+        return f"Transaction({self.date}, {self.description[:30]}, {self.category}, {sign}${self.amount})"
